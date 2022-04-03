@@ -1,0 +1,14 @@
+#! /bin/bash
+
+CHANGELOG=CHANGELOG.md
+
+if ! test ${GIT_BYPASS_POST_COMMIT+set}
+then
+    export GIT_BYPASS_POST_COMMIT=1
+
+    # ignore empty lines, ignore lines starting with ! and ignore lines starting with Signed-off-by,
+    # then add in front of remaining lines `* `.
+    git show --format=%B -s | sed -e '/^$/d' | sed -e '/^!/d' | sed -e '/^Signed-off-by:/ d' | sed -e 's/^/* /' >> $CHANGELOG
+    git add $CHANGELOG
+    git commit --amend -C HEAD
+fi
